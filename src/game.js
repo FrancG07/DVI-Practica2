@@ -1,13 +1,28 @@
 // Le asigna un nombre a cada sprite, indicando sus dimensiones
 // en el spritesheet y su número de fotogramas
 var sprites = {
-    ship: { sx: 0, sy: 0, w: 38, h: 43, frames: 1 },
-    missile: { sx: 0, sy: 30, w: 2, h: 10, frames: 1 },
-    enemy_purple: { sx: 37, sy: 0, w: 42, h: 43, frames: 1 },
-    enemy_bee: { sx: 79, sy: 0, w: 37, h: 43, frames: 1 },
-    enemy_ship: { sx: 116, sy: 0, w: 42, h: 43, frames: 1 },
-    enemy_circle: { sx: 158, sy: 0, w: 32, h: 33, frames: 1 },
-    explosion: { sx: 0, sy: 64, w: 64, h: 64, frames: 12 }
+    blueCar: { sx: 9, sy: 6, w: 89, h: 48, frames: 1 },
+    greenCar: { sx: 109, sy: 6, w: 94, h: 48, frames: 1 },
+    yellowCar: { sx: 214, sy: 6, w: 94, h: 48, frames: 1 },
+    redTruck: { sx: 7, sy: 62, w: 123, h: 46, frames: 1 },
+    brownTruck: { sx: 148, sy: 62, w: 199, h: 46, frames: 1 },
+    mediumLog: { sx: 10, sy: 123, w: 190, h: 39, frames: 1 },
+    largeLog: { sx: 10, sy: 173, w: 246, h: 39, frames: 1 },
+    smallLog: { sx: 271, sy: 172, w: 129, h: 40, frames: 1 },
+    death: { sx: 212, sy: 128, w: 45, h: 35, frames: 4 },
+    lilyPad: { sx: 4, sy: 235, w: 43, h: 38, frames: 1 },
+    fly: { sx: 58, sy: 239, w: 31, h: 33, frames: 1 },
+    greenSquare: { sx: 95, sy: 225, w: 57, h: 57, frames: 1 },
+    blueSquare: { sx: 159, sy: 225, w: 57, h: 57, frames: 1 },
+    blackSquare: { sx: 222, sy: 225, w: 57, h: 57, frames: 1 },
+    bushSquare: { sx: 285, sy: 225, w: 57, h: 57, frames: 1 },
+    lilySquare: { sx: 348, sy: 225, w: 57, h: 57, frames: 1 },
+    movingTurtle: { sx: 5, sy: 289, w: 50, h: 45, frames: 9 },
+    frog: { sx: 0, sy: 340, w: 39, h: 53, frames: 12 },
+    staticTurtle1: { sx: 282, sy: 345, w: 50, h: 41, frames: 1 },
+    staticTurtle2: { sx: 335, sy: 344, w: 50, h: 43, frames: 1 },
+    logo: { sx: 7, sy: 395, w: 263, h: 162, frames: 1 },
+    background: { sx: 421, sy: 0, w: 550, h: 626, frames: 1 }
 };
 
 var level1 = [
@@ -35,8 +50,8 @@ var startGame = function() {
 
 var playGame = function() {
     var board = new GameBoard();
-    board.add(new PlayerShip());
-    board.add(new Level(level1,winGame));
+    board.add(new BackGround());
+    //board.add(new Level(level1,winGame));
     Game.setBoard(0,board);
 };
 
@@ -65,5 +80,5 @@ var loseGame = function() {
 // y este después de realizar la inicialización llamará a
 // startGame
 window.addEventListener("load", function() {
-    Game.initialize("game",sprites,startGame);
+    Game.initialize("game",sprites,playGame);
 });   

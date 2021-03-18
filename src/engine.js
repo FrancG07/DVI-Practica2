@@ -1,10 +1,14 @@
+///////////////////////////////////////////////
+// SpriteSheet del juego, encargado de
+// cargar los sprites y de dibujarlos.
+///////////////////////////////////////////////
 var SpriteSheet = new function() {
     this.map = { };
     this.load = function(spriteData, callback) {
         this.map = spriteData;
         this.image = new Image();
         this.image.onload = callback;
-        this.image.src = 'img/sprites.png';
+        this.image.src = 'img/spritesFrogger.png';
     };
     this.draw = function(ctx,sprite,x,y,frame) {
         var s = this.map[sprite];
@@ -19,6 +23,9 @@ var SpriteSheet = new function() {
     };
 }
 
+///////////////////////////////////////////////
+// Canvas del juego
+///////////////////////////////////////////////
 var canvas = document.getElementById('game');
 var ctx = canvas.getContext && canvas.getContext('2d');
 if(!ctx) {
@@ -31,6 +38,10 @@ function startGame() {
     
 }
 
+///////////////////////////////////////////////
+// Objeto Game, encargado de controlar las
+// teclas pulsadas, el bucle del juego, etc
+///////////////////////////////////////////////
 var Game = new function() {
     // Le asignamos un nombre lógico a cada tecla que nos interesa
     var KEY_CODES = { 37:'left', 39:'right', 32 :'fire' };
@@ -73,8 +84,8 @@ var Game = new function() {
         var dt = 30 / 1000;
 
         // Cada pasada borramos el canvas
-        Game.ctx.fillStyle = "#000";
-        Game.ctx.fillRect(0, 0, Game.width, Game.height);
+        /*Game.ctx.fillStyle = "#000";
+        Game.ctx.fillRect(0, 0, Game.width, Game.height);*/
         
         // Actualizamos y dibujamos todas las entidades
         for (var i = 0, len = boards.length; i<len; i++){
@@ -90,6 +101,11 @@ var Game = new function() {
     this.setBoard = function(num, board) { boards[num] = board;}
 }
 
+///////////////////////////////////////////////
+// Objeto TitleScreen, encargado de mostrar
+// el menú principal y los menús de victoria
+// y/o derrota
+///////////////////////////////////////////////
 var TitleScreen = function TitleScreen(title,subtitle,callback) {
     var up = false;
     this.step = function(dt) {
@@ -107,7 +123,10 @@ var TitleScreen = function TitleScreen(title,subtitle,callback) {
     };
 };
 
-
+///////////////////////////////////////////////
+// Objeto GameBoard que controla los elementos
+// que hay en el juego y sus interacciones
+///////////////////////////////////////////////
 var GameBoard = function() {
     var board = this;
     // The current list of objects
@@ -194,6 +213,11 @@ var GameBoard = function() {
     };
 }    
 
+/*
+///////////////////////////////////////////////
+// Objeto Level encargado de gestionar los
+// niveles del juego (en desuso para Frogger)
+///////////////////////////////////////////////
 var Level = function(levelData,callback) {
     this.levelData = [];
     for(var i = 0; i < levelData.length; i++) {
@@ -241,6 +265,12 @@ Level.prototype.step = function(dt) {
     }
 }
 
+*/
+
+///////////////////////////////////////////////
+// Objeto Sprite, prototipo encargado de las
+// funciones generales de los objetos del juego
+///////////////////////////////////////////////
 var Sprite = function() {};
 
 Sprite.prototype.setup = function(sprite,props) {
@@ -260,13 +290,28 @@ Sprite.prototype.merge = function(props) {
 }
 
 Sprite.prototype.draw = function(ctx) {
-     SpriteSheet.draw(ctx,this.sprite,this.x,this.y,this.frame);
+    SpriteSheet.draw(ctx,this.sprite,this.x,this.y,this.frame);
 }
 
 Sprite.prototype.hit = function(damage) {
     this.board.remove(this);
-}    
+}
 
+///////////////////////////////////////////////
+// Objeto Background que dibuja el fondo del
+// juego
+///////////////////////////////////////////////
+
+var BackGround = function(){
+    this.x = 0;
+    this.y = 0;
+    this.setup('background', {});
+}
+
+BackGround.prototype = new Sprite();
+BackGround.prototype.step = function(ctx) { }
+
+/*
 var OBJECT_PLAYER = 1,
     OBJECT_PLAYER_PROJECTILE = 2,
     OBJECT_ENEMY = 4,
@@ -404,3 +449,4 @@ Explosion.prototype.step = function(dt) {
         this.board.remove(this);
     }
 };
+*/
