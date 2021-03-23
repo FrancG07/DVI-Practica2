@@ -44,7 +44,7 @@ function startGame() {
 ///////////////////////////////////////////////
 var Game = new function() {
     // Le asignamos un nombre lógico a cada tecla que nos interesa
-    var KEY_CODES = { 37:'left', 39:'right', 32 :'fire' };
+    var KEY_CODES = { 37:'left', 38 :'up', 39:'right', 40:'down' };
     this.keys = {};
 
     var boards = [];
@@ -310,6 +310,61 @@ var BackGround = function(){
 
 BackGround.prototype = new Sprite();
 BackGround.prototype.step = function(ctx) { }
+
+///////////////////////////////////////////////
+// Objeto Frog con sus funciones de control
+///////////////////////////////////////////////
+var Frog = function() {
+	// variables del sprite de la rana
+	var frog = ['frog', 'frog1', 'frog2', 'frog3', 'frog4', 'frog5']
+	var cont = 0;
+	
+	this.setup(frog[cont], { });
+	
+	this.x = Game.width/2 - this.w/2;
+    this.y = Game.height - this.h;
+    
+	this.step = function(dt) {
+        if(Game.keys['left']) { 
+			this.x -= 40;
+			this.cambioS();
+		}
+        else if(Game.keys['right']) {
+			this.x += 40;
+			this.cambioS();
+		}
+		else if(Game.keys['up']) {
+			this.y -= 48;
+			this.cambioS();
+		}
+		else if(Game.keys['down']) {
+			this.y += 48;
+			this.cambioS();
+		}
+        
+        if(this.x < 0) {
+			this.x = 0;
+		}
+        else if(this.x > Game.width - this.w) {
+            this.x = Game.width - this.w
+        }
+		if(this.y < 0) {
+			this.y = 0;
+		}
+        else if(this.y > Game.height - this.h) {
+            this.y = Game.height - this.h
+        }
+    }
+	
+	// función para cambiar el sprite de la rana
+	this.cambioS = function(){
+		cont = (cont < 5) ? cont+1 : 0;
+		this.setup(frog[cont], { });
+	}
+}
+
+Frog.prototype = new Sprite();
+Frog.prototype.step = function(ctx) { }
 
 /*
 var OBJECT_PLAYER = 1,

@@ -18,7 +18,12 @@ var sprites = {
     bushSquare: { sx: 285, sy: 225, w: 57, h: 57, frames: 1 },
     lilySquare: { sx: 348, sy: 225, w: 57, h: 57, frames: 1 },
     movingTurtle: { sx: 5, sy: 289, w: 50, h: 45, frames: 9 },
-    frog: { sx: 0, sy: 340, w: 39, h: 53, frames: 12 },
+    frog: { sx: 0, sy: 340, w: 38, h: 48, frames: 12 },
+	frog1: { sx: 40, sy: 340, w: 38, h: 48, frames: 12 },
+	frog2: { sx: 80, sy: 340, w: 38, h: 48, frames: 12 },
+	frog3: { sx: 120, sy: 340, w: 38, h: 48, frames: 12 },
+	frog4: { sx: 160, sy: 340, w: 38, h: 48, frames: 12 },
+	frog5: { sx: 200, sy: 340, w: 38, h: 48, frames: 12 },
     staticTurtle1: { sx: 282, sy: 345, w: 50, h: 41, frames: 1 },
     staticTurtle2: { sx: 335, sy: 344, w: 50, h: 43, frames: 1 },
     logo: { sx: 7, sy: 395, w: 263, h: 162, frames: 1 },
@@ -51,6 +56,7 @@ var startGame = function() {
 var playGame = function() {
     var board = new GameBoard();
     board.add(new BackGround());
+	board.add(new Frog());
     //board.add(new Level(level1,winGame));
     Game.setBoard(0,board);
 };
