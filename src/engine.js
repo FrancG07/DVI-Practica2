@@ -290,7 +290,14 @@ Sprite.prototype.merge = function(props) {
 }
 
 Sprite.prototype.draw = function(ctx) {
+	ctx.save();
+	
+	ctx.translate(this.x+this.w/2, this.y+this.h/2);
+	ctx.rotate(this.rotation * Math.PI /180);
+	ctx.translate(-(this.x+this.w/2), -(this.y+this.h/2));
+	
     SpriteSheet.draw(ctx,this.sprite,this.x,this.y,this.frame);
+	ctx.restore();
 }
 
 Sprite.prototype.hit = function(damage) {
@@ -321,45 +328,70 @@ var Frog = function() {
 	
 	this.setup(frog[cont], { });
 	
+	this.delay = 0.2;
+	this.keyDelay = 0.0;
+	this.vx = 0;
+	this.safe = false;
+	this.rotation = 0;
+	
 	this.x = Game.width/2 - this.w/2;
     this.y = Game.height - this.h;
-    
+	
+	// acción en cada paso de la rana
 	this.step = function(dt) {
-        if(Game.keys['left']) { 
-			this.x -= 40;
-			this.cambioS();
+		this.keyDelay -= dt;
+		
+		// usando keyDelay determinamos el tiempo entre cada paso de la rana
+		if(this.keyDelay <= 0){
+			// dependiendo de la tecla pulsada irá hacia ese lado al mismo tiempo que se rota su sprite
+			if(Game.keys['left']) { 
+				this.x -= this.w;
+				this.rotation = -90;
+				this.keyDelay = this.delay;
+				this.cambioS();
+			}
+			else if(Game.keys['right']) {
+				this.x += this.w;
+				this.rotation = 90;
+				this.keyDelay = this.delay;
+				this.cambioS();
+			}
+			else if(Game.keys['up']) {
+				this.y -= this.h;
+				this.rotation = 0;
+				this.keyDelay = this.delay;
+				this.cambioS();
+			}
+			else if(Game.keys['down']) {
+				this.y += this.h;
+				this.rotation = 180;
+				this.keyDelay = this.delay;
+				this.cambioS();
+			}
+		
+			// estos dos "if" sirven para determinar los límites verticales y horizontales y que la rana no se salga de la "pantalla"
+			if(this.x < 0) {
+				this.x = 0;
+			}
+			else if(this.x > Game.width - this.w) {
+				this.x = Game.width - this.w
+			}
+			if(this.y < 0) {
+				this.y = 0;
+			}
+			else if(this.y > Game.height - this.h) {
+				this.y = Game.height - this.h
+			}
 		}
-        else if(Game.keys['right']) {
-			this.x += 40;
-			this.cambioS();
-		}
-		else if(Game.keys['up']) {
-			this.y -= 48;
-			this.cambioS();
-		}
-		else if(Game.keys['down']) {
-			this.y += 48;
-			this.cambioS();
-		}
-        
-        if(this.x < 0) {
-			this.x = 0;
-		}
-        else if(this.x > Game.width - this.w) {
-            this.x = Game.width - this.w
-        }
-		if(this.y < 0) {
-			this.y = 0;
-		}
-        else if(this.y > Game.height - this.h) {
-            this.y = Game.height - this.h
-        }
     }
 	
 	// función para cambiar el sprite de la rana
+	// se supone que cambie entre todos los estados en cada movimiento, pero apenas se consigue que lo haga uno por paso
 	this.cambioS = function(){
-		cont = (cont < 5) ? cont+1 : 0;
-		this.setup(frog[cont], { });
+		for(var i = 0; i < 10; i++){
+			cont = (cont < 5) ? cont+1 : 0;
+			this.setup(frog[cont], { });
+		}
 	}
 }
 
