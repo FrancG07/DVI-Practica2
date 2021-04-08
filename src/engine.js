@@ -347,6 +347,26 @@ Water.prototype.step = function(ctx){
 };
 
 ///////////////////////////////////////////////
+// Objeto Death con sus funciones de control
+///////////////////////////////////////////////
+
+var Death = function(posX, posY){
+    this.x = posX;
+    this.y = posY;
+    this.w = 45;
+    this.h = 35;
+    this.subFrame = 0;
+
+    this.setup('death', {frame:0});
+}
+Death.prototype = new Sprite();
+Death.prototype.step = function(){
+    this.frame = Math.floor(this.subFrame++ / 6);
+    if(this.subFrame >= 24) {
+        this.board.remove(this);
+    }
+}
+///////////////////////////////////////////////
 // Objeto Frog con sus funciones de control
 ///////////////////////////////////////////////
 var Frog = function() {
@@ -381,6 +401,7 @@ var Frog = function() {
 Frog.prototype = new Sprite();
 Frog.prototype.type = OBJECT_PLAYER;
 Frog.prototype.hit = function(){
+    this.board.add(new Death(this.x, this.y));
     this.board.remove(this);
 }
 Frog.prototype.onTrunk = function(trunk){

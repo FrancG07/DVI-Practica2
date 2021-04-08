@@ -9,7 +9,7 @@ var sprites = {
     mediumLog: { sx: 10, sy: 123, w: 190, h: 39, frames: 1 },
     largeLog: { sx: 10, sy: 173, w: 246, h: 39, frames: 1 },
     smallLog: { sx: 271, sy: 172, w: 129, h: 40, frames: 1 },
-    death: { sx: 212, sy: 128, w: 45, h: 35, frames: 4 },
+    death: { sx: 212, sy: 128, w: 47, h: 35, frames: 4 },
     lilyPad: { sx: 4, sy: 235, w: 43, h: 38, frames: 1 },
     fly: { sx: 58, sy: 239, w: 31, h: 33, frames: 1 },
     greenSquare: { sx: 95, sy: 225, w: 57, h: 57, frames: 1 },
