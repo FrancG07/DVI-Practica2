@@ -396,7 +396,107 @@ var Frog = function() {
 }
 
 Frog.prototype = new Sprite();
-Frog.prototype.step = function(ctx) { }
+//Frog.prototype.step = function(ctx) { }
+
+///////////////////////////////////////////////
+// Objeto Car con sus funciones de control
+///////////////////////////////////////////////
+var Car = function(typeCar, position, direction, speed) {
+	// variables de la clase Car:
+	// typeCar determina el sprite asignado, 
+	// pos determina la "línea" en el que se coloca, 
+	// dir determinada desde que lado sale 
+	// vx determina la velocidad a la que se mueve horizontalmente
+	this.setup(typeCar, {pos: position, dir: direction, vx: speed});
+	
+	if(this.dir == 'right'){
+		this.x = Game.width;
+	}
+	else if(this.dir == 'left'){
+		this.x = -this.w;
+	}
+	
+	this.y = Game.height-(48*this.pos);
+	
+	this.step = function(dt) {
+		if(this.dir == 'right'){
+			this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;
+		}
+		else if(this.dir == 'left'){
+			this.x = (this.x > Game.width) ? -this.w : this.x+this.vx;
+		}
+	}
+}
+
+Car.prototype = new Sprite();
+//Car.prototype.step = function(ctx) { }
+
+///////////////////////////////////////////////
+// Objeto Trunk con sus funciones de control
+///////////////////////////////////////////////
+var Trunk = function(typeLog, position, direction, delay, speed) {
+	// variables de la clase Trunk:
+	// typeLog determina el sprite asignado, 
+	// pos determina la "línea" en el que se coloca, 
+	// dir determinada desde que lado sale
+	// delay determina el retroceso/distancia de aparición en pantalla
+	// vx determina la velocidad a la que se mueve horizontalmente
+	this.setup(typeLog, {pos: position, dir: direction, del: delay, vx: speed});
+	
+	if(this.dir == 'right'){
+		this.x = Game.width+this.del;
+	}
+	else if(this.dir == 'left'){
+		this.x = -this.w-this.del;
+	}
+	
+	this.y = Game.height-(48*this.pos);
+	
+	this.step = function(dt) {
+		if(this.dir == 'right'){
+			this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;
+		}
+		else if(this.dir == 'left'){
+			this.x = (this.x > Game.width) ? -this.w : this.x+this.vx;
+		}
+	}
+}
+
+Trunk.prototype = new Sprite();
+//Trunk.prototype.step = function(ctx) { }
+
+///////////////////////////////////////////////
+// Objeto Turtle con sus funciones de control
+///////////////////////////////////////////////
+var Turtle = function(position, direction, delay, speed) {
+	// variables de la clase Turtle:
+	// pos determina la "línea" en el que se coloca, 
+	// dir determinada desde que lado sale
+	// delay determina el retroceso/distancia de aparición en pantalla
+	// vx determina la velocidad a la que se mueve horizontalmente
+	this.setup('movingTurtle', {pos: position, dir: direction, del: delay, vx: speed});
+	
+	if(this.dir == 'right'){
+		this.x = Game.width+this.del;
+	}
+	else if(this.dir == 'left'){
+		this.x = -this.w-this.del;
+	}
+	
+	this.y = Game.height-(48*this.pos);
+	
+	this.step = function(dt) {
+		if(this.dir == 'right'){
+			this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;
+		}
+		else if(this.dir == 'left'){
+			this.x = (this.x > Game.width) ? -this.w : this.x+this.vx;
+		}
+	}
+}
+
+Turtle.prototype = new Sprite();
+//Turtle.prototype.step = function(ctx) { }
 
 /*
 var OBJECT_PLAYER = 1,
