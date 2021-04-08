@@ -272,6 +272,8 @@ Level.prototype.step = function(dt) {
 // funciones generales de los objetos del juego
 ///////////////////////////////////////////////
 var Sprite = function() {};
+var OBJECT_PLAYER = 1,
+    OBJECT_ENEMY = 2;
 
 Sprite.prototype.setup = function(sprite,props) {
     this.sprite = sprite;
@@ -322,81 +324,97 @@ BackGround.prototype.step = function(ctx) { }
 // Objeto Frog con sus funciones de control
 ///////////////////////////////////////////////
 var Frog = function() {
-	// variables del sprite de la rana
-	var frog = ['frog', 'frog1', 'frog2', 'frog3', 'frog4', 'frog5']
-	var cont = 0;
-	
-	this.setup(frog[cont], { });
+	this.subFrame = 0;
+	this.setup('frog', { });
 	
 	this.delay = 0.2;
 	this.keyDelay = 0.0;
 	this.vx = 0;
-	this.safe = false;
+	this.safe = true;
 	this.rotation = 0;
 	
 	this.x = Game.width/2 - this.w/2;
     this.y = Game.height - this.h;
 	
-	// acción en cada paso de la rana
-	this.step = function(dt) {
-		this.keyDelay -= dt;
-		
-		// usando keyDelay determinamos el tiempo entre cada paso de la rana
-		if(this.keyDelay <= 0){
-			// dependiendo de la tecla pulsada irá hacia ese lado al mismo tiempo que se rota su sprite
-			if(Game.keys['left']) { 
-				this.x -= this.w;
-				this.rotation = -90;
-				this.keyDelay = this.delay;
-				this.cambioS();
-			}
-			else if(Game.keys['right']) {
-				this.x += this.w;
-				this.rotation = 90;
-				this.keyDelay = this.delay;
-				this.cambioS();
-			}
-			else if(Game.keys['up']) {
-				this.y -= this.h;
-				this.rotation = 0;
-				this.keyDelay = this.delay;
-				this.cambioS();
-			}
-			else if(Game.keys['down']) {
-				this.y += this.h;
-				this.rotation = 180;
-				this.keyDelay = this.delay;
-				this.cambioS();
-			}
-		
-			// estos dos "if" sirven para determinar los límites verticales y horizontales y que la rana no se salga de la "pantalla"
-			if(this.x < 0) {
-				this.x = 0;
-			}
-			else if(this.x > Game.width - this.w) {
-				this.x = Game.width - this.w
-			}
-			if(this.y < 0) {
-				this.y = 0;
-			}
-			else if(this.y > Game.height - this.h) {
-				this.y = Game.height - this.h
-			}
-		}
-    }
-	
 	// función para cambiar el sprite de la rana
 	// se supone que cambie entre todos los estados en cada movimiento, pero apenas se consigue que lo haga uno por paso
-	this.cambioS = function(){
-		for(var i = 0; i < 10; i++){
-			cont = (cont < 5) ? cont+1 : 0;
-			this.setup(frog[cont], { });
-		}
+	this.playMoveAnimation = function(stepX, stepY){
+        this.frame = Math.floor(this.subFrame++ / 3);
+        this.x += (stepX/21);
+        this.y += (stepY/21);
+        if(this.subFrame >= 21){
+            this.subFrame = 0;
+            this.frame = 0;
+            this.safe = true;
+            return;
+        }
+        setTimeout(this.playMoveAnimation.bind(this), 10, stepX, stepY);
 	}
 }
 
 Frog.prototype = new Sprite();
-//Frog.prototype.step = function(ctx) { }
+Frog.prototype.type = OBJECT_PLAYER;
+Frog.prototype.hit = function(){
+    this.board.remove(this);
+}
+Frog.prototype.onTrunk = function(trunk){
+    if(trunk.dir == "right")
+        this.x -= trunk.vx;
+    else if(trunk.dir == "left")
+        this.x += trunk.vx;
+}
+
+// acción en cada paso de la rana
+Frog.prototype.step = function(dt) {
+    this.keyDelay -= dt;
+    
+    // usando keyDelay determinamos el tiempo entre cada paso de la rana
+    if(this.keyDelay <= 0){
+        
+        if(this.safe){
+            // dependiendo de la tecla pulsada irá hacia ese lado al mismo tiempo que se rota su sprite
+            if(Game.keys['left']) { 
+                this.safe = false;
+                this.rotation = -90;
+                this.keyDelay = this.delay;
+                this.playMoveAnimation(-this.w, 0);
+            }
+            else if(Game.keys['right']) {
+                this.safe = false;
+                this.rotation = 90;
+                this.keyDelay = this.delay;
+                this.playMoveAnimation(this.w, 0);
+            }
+            else if(Game.keys['up']) {
+                this.safe = false;
+                this.rotation = 0;
+                this.keyDelay = this.delay;
+                this.playMoveAnimation(0, -this.h);
+            }
+            else if(Game.keys['down']) {
+                this.safe = false;
+                this.rotation = 180;
+                this.keyDelay = this.delay;
+                this.playMoveAnimation(0, this.h);
+            }
+        }
+        
+    
+        // estos dos "if" sirven para determinar los límites verticales y horizontales y que la rana no se salga de la "pantalla"
+        if(this.x < 0) {
+            this.x = 0;
+        }
+        else if(this.x > Game.width - this.w) {
+            this.x = Game.width - this.w
+        }
+        if(this.y < 0) {
+            this.y = 0;
+        }
+        else if(this.y > Game.height - this.h) {
+            this.y = Game.height - this.h
+        }
+    }
+}
 
 ///////////////////////////////////////////////
 // Objeto Car con sus funciones de control
@@ -418,18 +436,23 @@ var Car = function(typeCar, position, direction, speed) {
 	
 	this.y = Game.height-(48*this.pos);
 	
-	this.step = function(dt) {
-		if(this.dir == 'right'){
-			this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;
-		}
-		else if(this.dir == 'left'){
-			this.x = (this.x > Game.width) ? -this.w : this.x+this.vx;
-		}
-	}
 }
 
 Car.prototype = new Sprite();
-//Car.prototype.step = function(ctx) { }
+Car.prototype.type = OBJECT_ENEMY;
+Car.prototype.step = function(dt) {
+    if(this.dir == 'right'){
+        this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;
+    }
+    else if(this.dir == 'left'){
+        this.x = (this.x > Game.width) ? -this.w : this.x+this.vx;
+    }
+
+    var collision = this.board.collide(this, OBJECT_PLAYER);
+    if(collision){
+        collision.hit();
+    }
+}
 
 ///////////////////////////////////////////////
 // Objeto Trunk con sus funciones de control
@@ -452,18 +475,22 @@ var Trunk = function(typeLog, position, direction, delay, speed) {
 	
 	this.y = Game.height-(48*this.pos);
 	
-	this.step = function(dt) {
-		if(this.dir == 'right'){
-			this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;
-		}
-		else if(this.dir == 'left'){
-			this.x = (this.x > Game.width) ? -this.w : this.x+this.vx;
-		}
-	}
 }
 
 Trunk.prototype = new Sprite();
-//Trunk.prototype.step = function(ctx) { }
+Trunk.prototype.step = function(ctx) { 
+    if(this.dir == 'right'){
+        this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;
+    }
+    else if(this.dir == 'left'){
+        this.x = (this.x > Game.width) ? -this.w : this.x+this.vx;
+    }
+
+    var collision = this.board.collide(this, OBJECT_PLAYER);
+    if(collision){
+        collision.onTrunk(this);
+    }
+}
 
 ///////////////////////////////////////////////
 // Objeto Turtle con sus funciones de control
@@ -484,19 +511,23 @@ var Turtle = function(position, direction, delay, speed) {
 	}
 	
 	this.y = Game.height-(48*this.pos);
-	
-	this.step = function(dt) {
-		if(this.dir == 'right'){
-			this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;
-		}
-		else if(this.dir == 'left'){
-			this.x = (this.x > Game.width) ? -this.w : this.x+this.vx;
-		}
-	}
+
 }
 
 Turtle.prototype = new Sprite();
-//Turtle.prototype.step = function(ctx) { }
+Turtle.prototype.step = function(ctx) { 
+    if(this.dir == 'right'){
+        this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;
+    }
+    else if(this.dir == 'left'){
+        this.x = (this.x > Game.width) ? -this.w : this.x+this.vx;
+    }
+
+    var collision = this.board.collide(this, OBJECT_PLAYER);
+    if(collision){
+        collision.onTrunk(this);
+    }
+}
 
 /*
 var OBJECT_PLAYER = 1,
