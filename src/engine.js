@@ -273,7 +273,8 @@ Level.prototype.step = function(dt) {
 ///////////////////////////////////////////////
 var Sprite = function() {};
 var OBJECT_PLAYER = 1,
-    OBJECT_ENEMY = 2;
+    OBJECT_ENEMY = 2,
+    OBJECT_PLATFORM = 4;
 
 Sprite.prototype.setup = function(sprite,props) {
     this.sprite = sprite;
@@ -319,6 +320,31 @@ var BackGround = function(){
 
 BackGround.prototype = new Sprite();
 BackGround.prototype.step = function(ctx) { }
+
+///////////////////////////////////////////////
+// Objeto Water con sus funciones de control
+///////////////////////////////////////////////
+
+var Water = function(){
+    this.x = 0;
+    this.y = 50;
+    this.h = 192;
+    this.w = 470; 
+}
+
+Water.prototype = new Sprite();
+Water.prototype.type = OBJECT_ENEMY;
+Water.prototype.draw = function(){};
+Water.prototype.step = function(ctx){
+    var collisionFrog = this.board.collide(this, OBJECT_PLAYER);
+    
+    if(collisionFrog){
+        var collisionPlatform = this.board.collide(collisionFrog, OBJECT_PLATFORM);
+        if(!collisionPlatform){
+            collisionFrog.hit();
+        }
+    }
+};
 
 ///////////////////////////////////////////////
 // Objeto Frog con sus funciones de control
@@ -478,6 +504,7 @@ var Trunk = function(typeLog, position, direction, delay, speed) {
 }
 
 Trunk.prototype = new Sprite();
+Trunk.prototype.type = OBJECT_PLATFORM;
 Trunk.prototype.step = function(ctx) { 
     if(this.dir == 'right'){
         this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;
@@ -515,6 +542,7 @@ var Turtle = function(position, direction, delay, speed) {
 }
 
 Turtle.prototype = new Sprite();
+Turtle.prototype.type = OBJECT_PLATFORM;
 Turtle.prototype.step = function(ctx) { 
     if(this.dir == 'right'){
         this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;

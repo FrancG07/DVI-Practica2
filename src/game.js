@@ -51,6 +51,8 @@ var startGame = function() {
 var addObjects = function(){
 	var board = new GameBoard();
 	
+    board.add(new Water());
+
 	board.add(new Car('brownTruck',2,'right',5));
 	board.add(new Car('redTruck',3,'left',5));
 	board.add(new Car('brownTruck',4,'right',5.5));
