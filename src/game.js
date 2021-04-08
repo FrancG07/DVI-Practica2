@@ -48,9 +48,9 @@ var startGame = function() {
     );
 }
 
-var playGame = function() {
-    var board = new GameBoard();
-    board.add(new BackGround());
+var addObjects = function(){
+	var board = new GameBoard();
+	
 	board.add(new Car('brownTruck',2,'right',5));
 	board.add(new Car('redTruck',3,'left',5));
 	board.add(new Car('brownTruck',4,'right',5.5));
@@ -58,8 +58,8 @@ var playGame = function() {
 	board.add(new Car('blueCar',6,'left',3));
 	//board.add(new Car('blueCar',6,'left',5));
 	
-	board.add(new Trunk('mediumLog',8,'right',0,7));
-	board.add(new Trunk('mediumLog',8,'right',(Game.width*2/3),7));
+	board.add(new Trunk('mediumLog',8,'right',0,5));
+	board.add(new Trunk('mediumLog',8,'right',(Game.width*2/3),5));
 	
 	board.add(new Turtle(9,'left',0,2));
 	board.add(new Turtle(9,'left',(Game.width/3),2));
@@ -78,7 +78,17 @@ var playGame = function() {
 	
 	board.add(new Frog());
     //board.add(new Level(level1,winGame));
+	
+	Game.setBoard(1,board);
+}
+
+var playGame = function() {
+    var board = new GameBoard();
+    board.add(new BackGround());
+	
     Game.setBoard(0,board);
+	
+	addObjects();
 };
 
 var winGame = function() {
