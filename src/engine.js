@@ -551,10 +551,10 @@ Car.prototype = new Sprite();
 Car.prototype.type = OBJECT_ENEMY;
 Car.prototype.step = function(dt) {
     if(this.dir == 'right'){
-        this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;
+        (this.x < -this.w) ? this.board.remove(this) : this.x-=this.vx;
     }
     else if(this.dir == 'left'){
-        this.x = (this.x > Game.width) ? -this.w : this.x+this.vx;
+        (this.x > Game.width) ? this.board.remove(this) : this.x+=this.vx;
     }
 
     var collision = this.board.collide(this, OBJECT_PLAYER);
@@ -562,24 +562,26 @@ Car.prototype.step = function(dt) {
         collision.hit();
     }
 }
+Car.prototype.copia = function(){
+	return new Car(this.sprite, this.pos, this.dir, this.vx);
+}
 
 ///////////////////////////////////////////////
 // Objeto Trunk con sus funciones de control
 ///////////////////////////////////////////////
-var Trunk = function(typeLog, position, direction, delay, speed) {
+var Trunk = function(typeLog, position, direction, speed) {
 	// variables de la clase Trunk:
 	// typeLog determina el sprite asignado, 
 	// pos determina la "línea" en el que se coloca, 
 	// dir determinada desde que lado sale
-	// delay determina el retroceso/distancia de aparición en pantalla
 	// vx determina la velocidad a la que se mueve horizontalmente
-	this.setup(typeLog, {pos: position, dir: direction, del: delay, vx: speed});
+	this.setup(typeLog, {pos: position, dir: direction, vx: speed});
 	
 	if(this.dir == 'right'){
-		this.x = Game.width+this.del;
+		this.x = Game.width;
 	}
 	else if(this.dir == 'left'){
-		this.x = -this.w-this.del;
+		this.x = -this.w;
 	}
 	
 	this.y = Game.height-(48*this.pos);
@@ -590,10 +592,10 @@ Trunk.prototype = new Sprite();
 Trunk.prototype.type = OBJECT_PLATFORM;
 Trunk.prototype.step = function(ctx) { 
     if(this.dir == 'right'){
-        this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;
+        (this.x < -this.w) ? this.board.remove(this) : this.x-=this.vx;
     }
     else if(this.dir == 'left'){
-        this.x = (this.x > Game.width) ? -this.w : this.x+this.vx;
+        (this.x > Game.width) ? this.board.remove(this) : this.x+=this.vx;
     }
 
     var collision = this.board.collide(this, OBJECT_PLAYER);
@@ -601,23 +603,25 @@ Trunk.prototype.step = function(ctx) {
         collision.onTrunk(this);
     }
 }
+Trunk.prototype.copia = function(){
+	return new Trunk(this.sprite, this.pos, this.dir, this.vx);
+}
 
 ///////////////////////////////////////////////
 // Objeto Turtle con sus funciones de control
 ///////////////////////////////////////////////
-var Turtle = function(position, direction, delay, speed) {
+var Turtle = function(position, direction, speed) {
 	// variables de la clase Turtle:
 	// pos determina la "línea" en el que se coloca, 
 	// dir determinada desde que lado sale
-	// delay determina el retroceso/distancia de aparición en pantalla
 	// vx determina la velocidad a la que se mueve horizontalmente
-	this.setup('movingTurtle', {pos: position, dir: direction, del: delay, vx: speed});
+	this.setup('movingTurtle', {pos: position, dir: direction, vx: speed});
 	
 	if(this.dir == 'right'){
-		this.x = Game.width+this.del;
+		this.x = Game.width;
 	}
 	else if(this.dir == 'left'){
-		this.x = -this.w-this.del;
+		this.x = -this.w;
 	}
 	
 	this.y = Game.height-(48*this.pos);
@@ -628,10 +632,10 @@ Turtle.prototype = new Sprite();
 Turtle.prototype.type = OBJECT_PLATFORM;
 Turtle.prototype.step = function(ctx) { 
     if(this.dir == 'right'){
-        this.x = (this.x < -this.w) ? Game.width : this.x-this.vx;
+        (this.x < -this.w) ? this.board.remove(this) : this.x-=this.vx;
     }
     else if(this.dir == 'left'){
-        this.x = (this.x > Game.width) ? -this.w : this.x+this.vx;
+        (this.x > Game.width) ? this.board.remove(this) : this.x+=this.vx;
     }
 
     var collision = this.board.collide(this, OBJECT_PLAYER);
@@ -639,6 +643,28 @@ Turtle.prototype.step = function(ctx) {
         collision.onTrunk(this);
     }
 }
+Turtle.prototype.copia = function(){
+	return new Turtle(this.pos, this.dir, this.vx);
+}
+
+///////////////////////////////////////////////
+// Objeto Spawner con sus funciones de control
+///////////////////////////////////////////////
+var Spawner = function(objeto, intervalo){
+	
+	this.obj = objeto;
+	this.inter = intervalo;
+	this.delay = 0.0;
+}
+Spawner.prototype.step = function(dt){
+	this.delay -= dt;
+	if(this.delay <= 0){
+		var obj = this.obj.copia();
+		this.board.add(obj);
+		this.delay = this.inter;
+	}
+}
+Spawner.prototype.draw = function(ctx) {}
 
 /*
 var OBJECT_PLAYER = 1,
