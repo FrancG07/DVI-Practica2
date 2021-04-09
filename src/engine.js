@@ -144,6 +144,13 @@ var GameBoard = function() {
         return obj;
     };
 
+    this.addBeforeLast = function(obj){
+        obj.board = this;
+        this.objects.splice(this.objects.length - 2, 0, obj);
+        this.cnt[obj.type] = (this.cnt[obj.type] || 0) + 1;
+        return obj;
+    }
+
     // Reset the list of removed objects
     this.resetRemoved = function() { this.removed = []; };
 
@@ -659,7 +666,7 @@ Spawner.prototype.step = function(dt){
 	this.delay -= dt;
 	if(this.delay <= 0){
 		var obj = this.obj.copia();
-		this.board.add(obj);
+		this.board.addBeforeLast(obj);
 		this.delay = this.inter;
 	}
 }
