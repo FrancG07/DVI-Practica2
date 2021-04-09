@@ -44,7 +44,7 @@ function startGame() {
 ///////////////////////////////////////////////
 var Game = new function() {
     // Le asignamos un nombre lógico a cada tecla que nos interesa
-    var KEY_CODES = { 37:'left', 38 :'up', 39:'right', 40:'down' };
+    var KEY_CODES = { 37:'left', 38 :'up', 39:'right', 40:'down', 13:'enter' };
     this.keys = {};
 
     var boards = [];
@@ -99,6 +99,8 @@ var Game = new function() {
     }
 
     this.setBoard = function(num, board) { boards[num] = board;}
+	
+	this.closeBoard = function(num) { boards[num].invertirEstado();}
 }
 
 ///////////////////////////////////////////////
@@ -109,8 +111,8 @@ var Game = new function() {
 var TitleScreen = function TitleScreen(title,subtitle,callback) {
     var up = false;
     this.step = function(dt) {
-        if( !Game.keys['fire'] ) up = true;
-        if( up && Game.keys['fire'] && callback ) callback();
+        if( !Game.keys['enter'] ) up = true;
+        if( up && Game.keys['enter'] && callback ) callback();
     };
 
     this.draw = function(ctx) {
@@ -119,7 +121,7 @@ var TitleScreen = function TitleScreen(title,subtitle,callback) {
         ctx.font = "bold 40px bangers";
         ctx.fillText(title,Game.width/2,Game.height/2);
         ctx.font = "bold 20px bangers";
-        ctx.fillText(subtitle,Game.width/2,Game.height/2 + 140);
+        ctx.fillText(subtitle,Game.width/2,Game.height/2 + 40);
     };
 };
 
@@ -129,6 +131,7 @@ var TitleScreen = function TitleScreen(title,subtitle,callback) {
 ///////////////////////////////////////////////
 var GameBoard = function() {
     var board = this;
+	var activado = true;
     // The current list of objects
     this.objects = [];
     this.cnt = {};
@@ -186,14 +189,18 @@ var GameBoard = function() {
     // Call step on all objects and them delete
     // any object that have been marked for removal
     this.step = function(dt) {
-        this.resetRemoved();
-        this.iterate('step',dt);
-        this.finalizeRemoved();
+		if(activado){
+			this.resetRemoved();
+			this.iterate('step',dt);
+			this.finalizeRemoved();
+		}
     };
 
     // Draw all the objects
     this.draw = function(ctx) {
-        this.iterate('draw',ctx);
+		if(activado){
+			this.iterate('draw',ctx);
+		}
     };
 
     // Check if two boundboxes are overlaping
@@ -211,6 +218,10 @@ var GameBoard = function() {
             }
         });
     };
+	
+	this.invertirEstado = function(){
+		activado = !activado;
+	}
 }    
 
 /*
@@ -322,6 +333,20 @@ BackGround.prototype = new Sprite();
 BackGround.prototype.step = function(ctx) { }
 
 ///////////////////////////////////////////////
+// Objeto Logo que dibuja el fondo del
+// juego
+///////////////////////////////////////////////
+
+var Logo = function(){
+	this.setup('logo', {});
+    this.x = Game.width/2 - this.w/2;
+    this.y = Game.height/2 - this.h*1.3;
+}
+
+Logo.prototype = new Sprite();
+Logo.prototype.step = function(ctx) { }
+
+///////////////////////////////////////////////
 // Objeto Water con sus funciones de control
 ///////////////////////////////////////////////
 
@@ -329,7 +354,7 @@ var Water = function(){
     this.x = 0;
     this.y = 50;
     this.h = 192;
-    this.w = 470; 
+    this.w = 550; 
 }
 
 Water.prototype = new Sprite();
@@ -342,6 +367,32 @@ Water.prototype.step = function(ctx){
         var collisionPlatform = this.board.collide(collisionFrog, OBJECT_PLATFORM);
         if(!collisionPlatform){
             collisionFrog.hit();
+        }
+    }
+};
+
+///////////////////////////////////////////////
+// Objeto Home con sus funciones de control
+///////////////////////////////////////////////
+
+var Home = function(){
+    this.x = 0;
+    this.y = 0;
+    this.h = 50;
+    this.w = 550; 
+}
+
+Home.prototype = new Sprite();
+Home.prototype.type = OBJECT_ENEMY;
+Home.prototype.draw = function(){};
+Home.prototype.step = function(ctx){
+    var collisionFrog = this.board.collide(this, OBJECT_PLAYER);
+    
+    if(collisionFrog){
+        var collisionPlatform = this.board.collide(collisionFrog, OBJECT_PLATFORM);
+        if(!collisionPlatform){
+			this.board.invertirEstado();
+            winGame();
         }
     }
 };
@@ -403,6 +454,8 @@ Frog.prototype.type = OBJECT_PLAYER;
 Frog.prototype.hit = function(){
     this.board.add(new Death(this.x, this.y));
     this.board.remove(this);
+	this.board.invertirEstado();
+	loseGame();
 }
 Frog.prototype.onTrunk = function(trunk){
     if(trunk.dir == "right")

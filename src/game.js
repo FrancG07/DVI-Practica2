@@ -39,19 +39,23 @@ var level1 = [
 
 // Especifica lo que se debe pintar al cargar el juego
 var startGame = function() {
+	var board = new GameBoard();
+	board.add(new BackGround());
+	board.add(new Logo());
+	board.add(new TitleScreen(
+            "Start",
+			"Press enter to start playing",
+            playGame));
     Game.setBoard(0,
-        new TitleScreen(
-            "Alien Invasion",
-            "Press fire to start playing",
-            playGame
-        )
+        board
     );
-}
+};
 
 var addObjects = function(){
 	var board = new GameBoard();
 	
     board.add(new Water());
+	board.add(new Home());
 
 	board.add(new Car('brownTruck',2,'right',5));
 	board.add(new Car('redTruck',3,'left',5));
@@ -94,22 +98,26 @@ var playGame = function() {
 };
 
 var winGame = function() {
-    Game.setBoard(0,new TitleScreen
-        (
-            "You win!",
-            "Press fire to play again",
-            playGame
-        )
+	var board = new GameBoard();
+	board.add(new Logo());
+	board.add(new TitleScreen(
+            "You win",
+			"Press enter to start playing",
+            playGame));
+    Game.setBoard(0,
+        board
     );
 };
 
 var loseGame = function() {
-    Game.setBoard(0,new TitleScreen
-        (
-            "You lose!",
-            "Press fire to play again",
-            playGame
-        )
+	var board = new GameBoard();
+	board.add(new Logo());
+	board.add(new TitleScreen(
+            "You lose",
+            "Press enter to start playing",
+            playGame));
+    Game.setBoard(0,
+        board
     );
 };
 
@@ -118,5 +126,5 @@ var loseGame = function() {
 // y este después de realizar la inicialización llamará a
 // startGame
 window.addEventListener("load", function() {
-    Game.initialize("game",sprites,playGame);
+    Game.initialize("game",sprites,startGame);
 });   
