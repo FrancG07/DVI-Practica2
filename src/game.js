@@ -98,13 +98,14 @@ var winGame = function() {
     );
 };
 
-var loseGame = function() {
+var loseGame = function(x, y) {
 	var board = new GameBoard();
 	board.add(new Logo());
 	board.add(new TitleScreen(
             "You lose",
             "Press enter to start playing",
             playGame));
+    board.add(new Death(x, y));
     Game.setBoard(1,
         board
     );

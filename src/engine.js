@@ -457,10 +457,9 @@ var Frog = function() {
 Frog.prototype = new Sprite();
 Frog.prototype.type = OBJECT_PLAYER;
 Frog.prototype.hit = function(){
-    this.board.add(new Death(this.x, this.y));
     this.board.remove(this);
 	this.board.invertirEstado();
-	loseGame();
+	loseGame(this.x, this.y);
 }
 Frog.prototype.onTrunk = function(trunk){
     if(trunk.dir == "right")
