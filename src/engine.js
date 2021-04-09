@@ -429,23 +429,28 @@ var Frog = function() {
 	this.vx = 0;
 	this.safe = true;
 	this.rotation = 0;
-	
+	this.direction = 'stop';
+    
 	this.x = Game.width/2 - this.w/2;
     this.y = Game.height - this.h;
 	
 	// función para cambiar el sprite de la rana
 	// se supone que cambie entre todos los estados en cada movimiento, pero apenas se consigue que lo haga uno por paso
-	this.playMoveAnimation = function(stepX, stepY){
+	this.playMoveAnimation = function(){
         this.frame = Math.floor(this.subFrame++ / 3);
-        this.x += (stepX/21);
-        this.y += (stepY/21);
-        if(this.subFrame >= 21){
+
+        switch(this.direction){
+            case 'right': this.x += (this.w/9); break;
+            case 'left': this.x += (-this.w/9); break;
+            case 'up': this.y += (-this.h/9); break;
+            case 'down': this.y += (this.h/9); break;
+        }
+        
+        if(this.subFrame >= 9){
             this.subFrame = 0;
             this.frame = 0;
             this.safe = true;
-            return;
         }
-        setTimeout(this.playMoveAnimation.bind(this), 10, stepX, stepY);
 	}
 }
 
@@ -468,6 +473,10 @@ Frog.prototype.onTrunk = function(trunk){
 Frog.prototype.step = function(dt) {
     this.keyDelay -= dt;
     
+    if(!this.safe){
+        this.playMoveAnimation();
+    }
+
     // usando keyDelay determinamos el tiempo entre cada paso de la rana
     if(this.keyDelay <= 0){
         
@@ -477,25 +486,25 @@ Frog.prototype.step = function(dt) {
                 this.safe = false;
                 this.rotation = -90;
                 this.keyDelay = this.delay;
-                this.playMoveAnimation(-this.w, 0);
+                this.direction = 'left';
             }
             else if(Game.keys['right']) {
                 this.safe = false;
                 this.rotation = 90;
                 this.keyDelay = this.delay;
-                this.playMoveAnimation(this.w, 0);
+                this.direction = 'right';
             }
             else if(Game.keys['up']) {
                 this.safe = false;
                 this.rotation = 0;
                 this.keyDelay = this.delay;
-                this.playMoveAnimation(0, -this.h);
+                this.direction = 'up';
             }
             else if(Game.keys['down']) {
                 this.safe = false;
                 this.rotation = 180;
                 this.keyDelay = this.delay;
-                this.playMoveAnimation(0, this.h);
+                this.direction = 'down';
             }
         }
         
