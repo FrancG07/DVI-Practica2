@@ -66,15 +66,10 @@ var addObjects = function(){
 	board.add(new Spawner(new Car('brownTruck',4,'right',5.5),5));
 	board.add(new Spawner(new Car('greenCar',5,'left',3.2),4));
 	board.add(new Spawner(new Car('blueCar',6,'left',3),4));
-	
 	board.add(new Spawner(new Trunk('mediumLog',8,'right',5),3));
-	
 	board.add(new Spawner(new Turtle(9,'left',2),3.5));
-	
 	board.add(new Spawner(new Trunk('mediumLog',10,'left',3),3.5));
-	
 	board.add(new Spawner(new Turtle(11,'left',1.5),4));
-	
 	board.add(new Spawner(new Trunk('mediumLog',12,'right',3.5),4));
 	
 	board.add(new Frog());
