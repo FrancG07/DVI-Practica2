@@ -61,33 +61,23 @@ var addObjects = function(){
     board.add(new Water());
 	board.add(new Home());
 
-	board.add(new Car('brownTruck',2,'right',5));
-	board.add(new Car('redTruck',3,'left',5));
-	board.add(new Car('brownTruck',4,'right',5.5));
-	board.add(new Car('greenCar',5,'left',3.2));
-	board.add(new Car('blueCar',6,'left',3));
-	//board.add(new Car('blueCar',6,'left',5));
+	board.add(new Spawner(new Car('brownTruck',2,'right',5),5));
+	board.add(new Spawner(new Car('redTruck',3,'left',5),5));
+	board.add(new Spawner(new Car('brownTruck',4,'right',5.5),5));
+	board.add(new Spawner(new Car('greenCar',5,'left',3.2),4));
+	board.add(new Spawner(new Car('blueCar',6,'left',3),4));
 	
-	board.add(new Trunk('mediumLog',8,'right',0,5));
-	board.add(new Trunk('mediumLog',8,'right',(Game.width*2/3),5));
+	board.add(new Spawner(new Trunk('mediumLog',8,'right',5),3));
 	
-	board.add(new Turtle(9,'left',0,2));
-	board.add(new Turtle(9,'left',(Game.width/3),2));
-	board.add(new Turtle(9,'left',(Game.width/3*2),2));
+	board.add(new Spawner(new Turtle(9,'left',2),3.5));
 	
-	board.add(new Trunk('mediumLog',10,'left',0,3));
-	board.add(new Trunk('mediumLog',10,'left',(Game.width*2/3),3));
-	//board.add(new Trunk(10,'left', (Game.width*4/3)));
+	board.add(new Spawner(new Trunk('mediumLog',10,'left',3),3.5));
 	
-	board.add(new Turtle(11,'left',0,1.5	));
-	board.add(new Turtle(11,'left',(Game.width/3),1.5));
-	board.add(new Turtle(11,'left',(Game.width/3*2),1.5));
+	board.add(new Spawner(new Turtle(11,'left',1.5),4));
 	
-	board.add(new Trunk('mediumLog',12,'right',0,4));
-	board.add(new Trunk('mediumLog',12,'right',(Game.width*2/3),4));
+	board.add(new Spawner(new Trunk('mediumLog',12,'right',3.5),4));
 	
 	board.add(new Frog());
-    //board.add(new Level(level1,winGame));
 	
 	Game.setBoard(1,board);
 }
