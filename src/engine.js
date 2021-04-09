@@ -353,7 +353,7 @@ Logo.prototype.step = function(ctx) { }
 var Water = function(){
     this.x = 0;
     this.y = 50;
-    this.h = 192;
+    this.h = 200;
     this.w = 550; 
 }
 
@@ -362,7 +362,6 @@ Water.prototype.type = OBJECT_ENEMY;
 Water.prototype.draw = function(){};
 Water.prototype.step = function(ctx){
     var collisionFrog = this.board.collide(this, OBJECT_PLAYER);
-    
     if(collisionFrog){
         var collisionPlatform = this.board.collide(collisionFrog, OBJECT_PLATFORM);
         if(!collisionPlatform){
@@ -450,6 +449,7 @@ var Frog = function() {
             this.subFrame = 0;
             this.frame = 0;
             this.safe = true;
+            this.direction = 'stop';
         }
 	}
 }
