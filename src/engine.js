@@ -121,7 +121,7 @@ var TitleScreen = function TitleScreen(title,subtitle,callback) {
         ctx.font = "bold 40px bangers";
         ctx.fillText(title,Game.width/2,Game.height/2);
         ctx.font = "bold 20px bangers";
-        ctx.fillText(subtitle,Game.width/2,Game.height/2 + 40);
+        ctx.fillText(subtitle,Game.width/2,Game.height/2 + 140);
     };
 };
 

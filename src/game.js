@@ -39,14 +39,18 @@ var level1 = [
 
 // Especifica lo que se debe pintar al cargar el juego
 var startGame = function() {
+    Game.setBoard(0,
+        new BackGround()
+    );
+
 	var board = new GameBoard();
-	board.add(new BackGround());
 	board.add(new Logo());
 	board.add(new TitleScreen(
             "Start",
 			"Press enter to start playing",
             playGame));
-    Game.setBoard(0,
+    
+    Game.setBoard(1,
         board
     );
 };
@@ -89,11 +93,6 @@ var addObjects = function(){
 }
 
 var playGame = function() {
-    var board = new GameBoard();
-    board.add(new BackGround());
-	
-    Game.setBoard(0,board);
-	
 	addObjects();
 };
 
@@ -104,7 +103,7 @@ var winGame = function() {
             "You win",
 			"Press enter to start playing",
             playGame));
-    Game.setBoard(0,
+    Game.setBoard(1,
         board
     );
 };
@@ -116,7 +115,7 @@ var loseGame = function() {
             "You lose",
             "Press enter to start playing",
             playGame));
-    Game.setBoard(0,
+    Game.setBoard(1,
         board
     );
 };
