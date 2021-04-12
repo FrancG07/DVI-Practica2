@@ -58,8 +58,8 @@ var startGame = function() {
 var addObjects = function(){
 	var board = new GameBoard();
 	
-    board.add(new Water());
-	board.add(new Home());
+    board.add(new Water(0,49,200,550));
+	board.add(new Home(0,0,48,550));
 
 	board.add(new Spawner(new Car('brownTruck',2,'right',5),5));
 	board.add(new Spawner(new Car('redTruck',3,'left',5),5));

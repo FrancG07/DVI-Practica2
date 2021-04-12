@@ -100,7 +100,7 @@ var Game = new function() {
 
     this.setBoard = function(num, board) { boards[num] = board;}
 	
-	this.closeBoard = function(num) { boards[num].invertirEstado();}
+	this.closeBoard = function(num) { boards[num].changeEnable();}
 }
 
 ///////////////////////////////////////////////
@@ -131,7 +131,7 @@ var TitleScreen = function TitleScreen(title,subtitle,callback) {
 ///////////////////////////////////////////////
 var GameBoard = function() {
     var board = this;
-	var activado = true;
+	var enable = true;
     // The current list of objects
     this.objects = [];
     this.cnt = {};
@@ -144,6 +144,7 @@ var GameBoard = function() {
         return obj;
     };
 
+	// añade un nuevo objecto antes del último
     this.addBeforeLast = function(obj){
         obj.board = this;
         this.objects.splice(this.objects.length - 2, 0, obj);
@@ -196,7 +197,8 @@ var GameBoard = function() {
     // Call step on all objects and them delete
     // any object that have been marked for removal
     this.step = function(dt) {
-		if(activado){
+		// se realizan los pasos si el Board está activo
+		if(enable){
 			this.resetRemoved();
 			this.iterate('step',dt);
 			this.finalizeRemoved();
@@ -205,7 +207,8 @@ var GameBoard = function() {
 
     // Draw all the objects
     this.draw = function(ctx) {
-		if(activado){
+		// se realizan los dibujar si el Board está activo
+		if(enable){
 			this.iterate('draw',ctx);
 		}
     };
@@ -226,64 +229,11 @@ var GameBoard = function() {
         });
     };
 	
-	this.invertirEstado = function(){
-		activado = !activado;
+	// cambia el estado del Board
+	this.changeEnable = function(){
+		enable = !enable;
 	}
-}    
-
-/*
-///////////////////////////////////////////////
-// Objeto Level encargado de gestionar los
-// niveles del juego (en desuso para Frogger)
-///////////////////////////////////////////////
-var Level = function(levelData,callback) {
-    this.levelData = [];
-    for(var i = 0; i < levelData.length; i++) {
-        this.levelData.push(Object.create(levelData[i]));
-    }
-    this.t = 0;
-    this.callback = callback;
 }
-
-Level.prototype.draw = function(ctx) { }
-
-Level.prototype.step = function(dt) {
-    var idx = 0, remove = [], curShip = null;
-    // Update the current time offset
-    this.t += dt * 1000;
-    // Example levelData
-    // Start, End, Gap, Type, Override
-    // [[ 0, 4000, 500, 'step', { x: 100 } ]
-    while((curShip = this.levelData[idx]) &&
-        (curShip[0] < this.t + 2000)) {
-        // Check if past the end time
-        if(this.t > curShip[1]) {
-            // If so, remove the entry
-            remove.push(curShip);
-        } else if(curShip[0] < this.t) {
-            // Get the enemy definition blueprint
-            var enemy = enemies[curShip[3]],
-            override = curShip[4];
-            // Add a new enemy with the blueprint and override
-            this.board.add(new Enemy(enemy,override));
-            // Increment the start time by the gap
-            curShip[0] += curShip[2];
-        }
-        idx++;
-    }
-    // Remove any objects from the levelData that have passed
-    for(var i = 0, len = remove.length; i < len; i++) {
-        var idx = this.levelData.indexOf(remove[i]);
-        if(idx != -1) this.levelData.splice(idx,1);
-    }
-    // If there are no more enemies on the board or in
-    // levelData, this level is done
-    if(this.levelData.length == 0 && this.board.cnt[OBJECT_ENEMY] == 0) {
-        if(this.callback) this.callback();
-    }
-}
-
-*/
 
 ///////////////////////////////////////////////
 // Objeto Sprite, prototipo encargado de las
@@ -329,7 +279,6 @@ Sprite.prototype.hit = function(damage) {
 // Objeto Background que dibuja el fondo del
 // juego
 ///////////////////////////////////////////////
-
 var BackGround = function(){
     this.x = 0;
     this.y = 0;
@@ -343,7 +292,6 @@ BackGround.prototype.step = function(ctx) { }
 // Objeto Logo que dibuja el fondo del
 // juego
 ///////////////////////////////////////////////
-
 var Logo = function(){
 	this.setup('logo', {});
     this.x = Game.width/2 - this.w/2;
@@ -356,12 +304,11 @@ Logo.prototype.step = function(ctx) { }
 ///////////////////////////////////////////////
 // Objeto Water con sus funciones de control
 ///////////////////////////////////////////////
-
-var Water = function(){
-    this.x = 0;
-    this.y = 50;
-    this.h = 200;
-    this.w = 550; 
+var Water = function(x, y, h, w){
+    this.x = x;
+    this.y = y;
+    this.h = h;
+    this.w = w; 
 }
 
 Water.prototype = new Sprite();
@@ -369,6 +316,7 @@ Water.prototype.type = OBJECT_ENEMY;
 Water.prototype.draw = function(){};
 Water.prototype.step = function(ctx){
     var collisionFrog = this.board.collide(this, OBJECT_PLAYER);
+	// comprobación de si la rana colisiona con Water
     if(collisionFrog){
         var collisionPlatform = this.board.collide(collisionFrog, OBJECT_PLATFORM);
         if(!collisionPlatform){
@@ -380,12 +328,11 @@ Water.prototype.step = function(ctx){
 ///////////////////////////////////////////////
 // Objeto Home con sus funciones de control
 ///////////////////////////////////////////////
-
-var Home = function(){
-    this.x = 0;
-    this.y = 0;
-    this.h = 50;
-    this.w = 550; 
+var Home = function(x, y, h, w){
+    this.x = x;
+    this.y = y;
+    this.h = h;
+    this.w = w;
 }
 
 Home.prototype = new Sprite();
@@ -393,11 +340,11 @@ Home.prototype.type = OBJECT_ENEMY;
 Home.prototype.draw = function(){};
 Home.prototype.step = function(ctx){
     var collisionFrog = this.board.collide(this, OBJECT_PLAYER);
-    
+    // comprobación de si la rana colisiona con Home/meta
     if(collisionFrog){
         var collisionPlatform = this.board.collide(collisionFrog, OBJECT_PLATFORM);
         if(!collisionPlatform){
-			this.board.invertirEstado();
+			this.board.changeEnable();
             winGame();
         }
     }
@@ -406,7 +353,6 @@ Home.prototype.step = function(ctx){
 ///////////////////////////////////////////////
 // Objeto Death con sus funciones de control
 ///////////////////////////////////////////////
-
 var Death = function(posX, posY){
     this.x = posX;
     this.y = posY;
@@ -418,6 +364,7 @@ var Death = function(posX, posY){
 }
 Death.prototype = new Sprite();
 Death.prototype.step = function(){
+	// realiza la animación de la muerte
     this.frame = Math.floor(this.subFrame++ / 6);
     if(this.subFrame >= 24) {
         this.board.remove(this);
@@ -440,8 +387,7 @@ var Frog = function() {
 	this.x = Game.width/2 - this.w/2;
     this.y = Game.height - this.h;
 	
-	// función para cambiar el sprite de la rana
-	// se supone que cambie entre todos los estados en cada movimiento, pero apenas se consigue que lo haga uno por paso
+	// función para realizar la animación de la rana
 	this.playMoveAnimation = function(){
         this.frame = Math.floor(this.subFrame++ / 3);
 
@@ -463,11 +409,13 @@ var Frog = function() {
 
 Frog.prototype = new Sprite();
 Frog.prototype.type = OBJECT_PLAYER;
+// acción tras que la rena sea tocada/colisionada
 Frog.prototype.hit = function(){
     this.board.remove(this);
-	this.board.invertirEstado();
+	this.board.changeEnable();
 	loseGame(this.x, this.y);
 }
+// acción de la rana tras colisionar con Trunk/Turtle
 Frog.prototype.onTrunk = function(trunk){
     if(trunk.dir == "right")
         this.x -= trunk.vx;
@@ -556,6 +504,7 @@ var Car = function(typeCar, position, direction, speed) {
 Car.prototype = new Sprite();
 Car.prototype.type = OBJECT_ENEMY;
 Car.prototype.step = function(dt) {
+	// movimiento de Car dependiendo desde donde aparece
     if(this.dir == 'right'){
         (this.x < -this.w) ? this.board.remove(this) : this.x-=this.vx;
     }
@@ -563,11 +512,13 @@ Car.prototype.step = function(dt) {
         (this.x > Game.width) ? this.board.remove(this) : this.x+=this.vx;
     }
 
+	// comprobación de si la rana colisiona con Car
     var collision = this.board.collide(this, OBJECT_PLAYER);
     if(collision){
         collision.hit();
     }
 }
+// devuelve un objeto copia con sus mismos datos
 Car.prototype.copia = function(){
 	return new Car(this.sprite, this.pos, this.dir, this.vx);
 }
@@ -597,18 +548,21 @@ var Trunk = function(typeLog, position, direction, speed) {
 Trunk.prototype = new Sprite();
 Trunk.prototype.type = OBJECT_PLATFORM;
 Trunk.prototype.step = function(ctx) { 
+	// movimiento de Trunk dependiendo desde donde aparece
     if(this.dir == 'right'){
         (this.x < -this.w) ? this.board.remove(this) : this.x-=this.vx;
     }
     else if(this.dir == 'left'){
         (this.x > Game.width) ? this.board.remove(this) : this.x+=this.vx;
     }
-
+	
+	// comprobación de si la rana colisiona con Trunk
     var collision = this.board.collide(this, OBJECT_PLAYER);
     if(collision){
         collision.onTrunk(this);
     }
 }
+// devuelve un objeto copia con sus mismos datos
 Trunk.prototype.copia = function(){
 	return new Trunk(this.sprite, this.pos, this.dir, this.vx);
 }
@@ -637,18 +591,21 @@ var Turtle = function(position, direction, speed) {
 Turtle.prototype = new Sprite();
 Turtle.prototype.type = OBJECT_PLATFORM;
 Turtle.prototype.step = function(ctx) { 
+	// movimiento de Turtle dependiendo desde donde aparece
     if(this.dir == 'right'){
         (this.x < -this.w) ? this.board.remove(this) : this.x-=this.vx;
     }
     else if(this.dir == 'left'){
         (this.x > Game.width) ? this.board.remove(this) : this.x+=this.vx;
     }
-
+	
+	// comprobación de si la rana colisiona con Turtle
     var collision = this.board.collide(this, OBJECT_PLAYER);
     if(collision){
         collision.onTrunk(this);
     }
 }
+// devuelve un objeto copia con sus mismos datos
 Turtle.prototype.copia = function(){
 	return new Turtle(this.pos, this.dir, this.vx);
 }
@@ -663,6 +620,7 @@ var Spawner = function(objeto, intervalo){
 	this.delay = 0.0;
 }
 Spawner.prototype.step = function(dt){
+	// usa this.inter como tiempo intervalo entre aparaciones del objeto
 	this.delay -= dt;
 	if(this.delay <= 0){
 		var obj = this.obj.copia();
@@ -671,143 +629,3 @@ Spawner.prototype.step = function(dt){
 	}
 }
 Spawner.prototype.draw = function(ctx) {}
-
-/*
-var OBJECT_PLAYER = 1,
-    OBJECT_PLAYER_PROJECTILE = 2,
-    OBJECT_ENEMY = 4,
-    OBJECT_ENEMY_PROJECTILE = 8,
-    OBJECT_POWERUP = 16;
-
-var PlayerShip = function() {
-    this.setup('ship', { vx: 0, frame: 0, reloadTime: 0.25, maxVel: 200 });
-
-    this.x = Game.width/2 - this.w / 2;
-    this.y = Game.height - 10 - this.h;
-    
-    this.reload = this.reloadTime;
-
-    this.step = function(dt) {
-        if(Game.keys['left']) { this.vx = -this.maxVel; }
-        else if(Game.keys['right']) { this.vx = this.maxVel; }
-        else { this.vx = 0; }
-        this.x += this.vx * dt;
-        if(this.x < 0) { this.x = 0; }
-        else if(this.x > Game.width - this.w) {
-            this.x = Game.width - this.w
-        }
-
-        this.reload -= dt;
-        if(Game.keys['fire'] && this.reload < 0){
-            Game.keys['fire'] = false;
-            this.reload = this.reloadTime;
-            this.board.add(new PlayerMissile(this.x,this.y+this.h/2));
-            this.board.add(new PlayerMissile(this.x+this.w,this.y+this.h/2));
-        }
-    }
-}
-
-PlayerShip.prototype = new Sprite();
-PlayerShip.prototype.type = OBJECT_PLAYER;
-
-PlayerShip.prototype.hit = function(damage) {
-    if(this.board.remove(this)) {
-        loseGame();
-    }
-}
-
-var PlayerMissile = function(x,y) {
-    this.setup('missile',{ vy: -700, damage:10 });
-    this.x = x - this.w/2;
-    this.y = y - this.h;
-};
-
-PlayerMissile.prototype = new Sprite();
-PlayerMissile.prototype.type = OBJECT_PLAYER_PROJECTILE;
-
-PlayerMissile.prototype.step = function(dt) {
-    this.y += this.vy * dt;
-    var collision = this.board.collide(this,OBJECT_ENEMY);
-    if(collision) {
-        collision.hit(this.damage);
-        this.board.remove(this);
-    } else if(this.y < -this.h) {
-        this.board.remove(this);
-    }
-};
-
-var enemies = {
-    straight: { x: 0, y: -50, sprite:'enemy_ship', health: 10,
-        E: 100 },
-    ltr: { x: 0, y: -100, sprite:'enemy_purple', health: 10,
-        B: 200, C: 1, E: 200  },
-    circle: { x: 400,   y: -50, sprite:'enemy_circle', health: 10,
-        A: 0,  B: -200, C: 1, E: 20, F: 200, G: 1, H: Math.PI/2 },
-    wiggle: { x: 100, y: -50, sprite:'enemy_bee', health: 20,
-        B: 100, C: 4, E: 100 },
-    step: { x: 0,   y: -50, sprite:'enemy_circle', health: 10,
-        B: 300, C: 1.5, E: 60 }
-};
-
-var Enemy = function(blueprint,override) {
-    this.merge(this.baseParameters);
-    this.setup(blueprint.sprite,blueprint);
-    this.merge(override);
-}
-
-Enemy.prototype = new Sprite();
-Enemy.prototype.type = OBJECT_ENEMY;
-Enemy.prototype.baseParameters = { 
-    A: 0, B: 0, C: 0, D: 0,
-    E: 0, F: 0, G: 0, H: 0,
-    t: 0 
-};
-
-Enemy.prototype.step = function(dt) {
-    this.t += dt;
-    this.vx = this.A + this.B * Math.sin(this.C * this.t + this.D);
-    this.vy = this.E + this.F * Math.sin(this.G * this.t + this.H);
-    this.x += this.vx * dt;
-    this.y += this.vy * dt;
-
-    var collision = this.board.collide(this,OBJECT_PLAYER);
-    if(collision) {
-        collision.hit(this.damage);
-        this.board.remove(this);
-    }
-
-    if(this.y > Game.height ||
-    this.x < -this.w ||
-    this.x > Game.width) {
-        this.board.remove(this);
-    }
-}
-Enemy.prototype.hit = function(damage) {
-    this.health -= damage;
-    if(this.health <= 0)
-        if(this.board.remove(this)) {
-            this.board.add(new Explosion
-                (
-                this.x + this.w/2,
-                this.y + this.h/2
-                )
-            );
-        }
-}
-
-var Explosion = function(centerX, centerY){
-    this.setup('explosion', { frame: 0 });
-    this.x = centerX - this.w/2;
-    this.y = centerY - this.h/2;
-    this.subFrame = 0;
-}
-
-Explosion.prototype = new Sprite();
-
-Explosion.prototype.step = function(dt) {
-    this.frame = Math.floor(this.subFrame++ / 3);
-    if(this.subFrame >= 36) {
-        this.board.remove(this);
-    }
-};
-*/
