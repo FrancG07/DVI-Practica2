@@ -8,7 +8,7 @@ var SpriteSheet = new function() {
         this.map = spriteData;
         this.image = new Image();
         this.image.onload = callback;
-        this.image.src = 'img/spritesFrogger.png';
+        this.image.src = 'img/sprites.png';
     };
     this.draw = function(ctx,sprite,x,y,frame) {
         var s = this.map[sprite];

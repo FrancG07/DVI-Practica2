@@ -1,5 +1,0 @@
-Tamaño del canvas
- <canvas id='game' width='549' height='625'></canvas>
-
-Tamaño sprite rana
-frog: { sx: 120, sy: 340, w: 40, h: 48, frames: 1 },
