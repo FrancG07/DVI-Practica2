@@ -22,5 +22,5 @@ La versión aquí desarrollada se puede jugar siguiendo el siguiente [enlace](ht
   - Menús y condiciones de finalización
   - Generadores de coches y troncos
 - Mejoras y ampliaciones
-  - Animación de la rana
-  - Vidas
+  - Animación de la rana: el sprite de la rana se mueve cuando efectuamos un movimiento
+  - Vidas: la rana aguanta 3 golpes/caídas al agua antes de perder la partida. En la parte superior izquierda se muestran las vidas restantes representadas por unos corazones
