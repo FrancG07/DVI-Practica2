@@ -384,6 +384,8 @@ var Frog = function() {
 	this.rotation = 0;
 	this.direction = 'stop';
     
+    this.lifes = 3;
+
 	this.x = Game.width/2 - this.w/2;
     this.y = Game.height - this.h;
 	
@@ -411,9 +413,16 @@ Frog.prototype = new Sprite();
 Frog.prototype.type = OBJECT_PLAYER;
 // acción tras que la rena sea tocada/colisionada
 Frog.prototype.hit = function(){
-    this.board.remove(this);
-	this.board.changeEnable();
-	loseGame(this.x, this.y);
+    if(this.lifes > 1){
+        this.lifes--;
+        this.board.add(new Death(this.x, this.y));
+        this.x = Game.width/2 - this.w/2;
+        this.y = Game.height - this.h;
+    } else{
+        this.board.remove(this);
+	    this.board.changeEnable();
+	    loseGame(this.x, this.y);
+    }    
 }
 // acción de la rana tras colisionar con Trunk/Turtle
 Frog.prototype.onTrunk = function(trunk){

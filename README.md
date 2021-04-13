@@ -23,3 +23,4 @@ La versión aquí desarrollada se puede jugar siguiendo el siguiente [enlace](ht
   - Generadores de coches y troncos
 - Mejoras y ampliaciones
   - Animación de la rana
+  - Vidas
