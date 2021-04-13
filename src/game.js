@@ -5,7 +5,7 @@ var sprites = {
     greenCar: { sx: 109, sy: 6, w: 94, h: 48, frames: 1 },
     yellowCar: { sx: 214, sy: 6, w: 94, h: 48, frames: 1 },
     redTruck: { sx: 7, sy: 62, w: 123, h: 46, frames: 1 },
-    brownTruck: { sx: 148, sy: 62, w: 199, h: 46, frames: 1 },
+    brownTruck: { sx: 148, sy: 62, w: 199, h: 45, frames: 1 },
     mediumLog: { sx: 10, sy: 123, w: 190, h: 39, frames: 1 },
     largeLog: { sx: 10, sy: 173, w: 246, h: 39, frames: 1 },
     smallLog: { sx: 271, sy: 172, w: 129, h: 40, frames: 1 },
@@ -22,6 +22,7 @@ var sprites = {
     staticTurtle1: { sx: 282, sy: 345, w: 50, h: 41, frames: 1 },
     staticTurtle2: { sx: 335, sy: 344, w: 50, h: 43, frames: 1 },
     logo: { sx: 7, sy: 395, w: 263, h: 162, frames: 1 },
+    heart: { sx: 282, sy: 394, w: 27, h: 27, frames: 1},
     background: { sx: 421, sy: 0, w: 550, h: 626, frames: 1 }
 };
 

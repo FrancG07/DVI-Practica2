@@ -370,6 +370,27 @@ Death.prototype.step = function(){
         this.board.remove(this);
     }
 }
+
+///////////////////////////////////////////////
+// Objeto Heart con sus funciones de control
+///////////////////////////////////////////////
+
+var Heart = function(posX){
+    this.x = posX;
+    this.y = 0;
+    this.w = 27;
+    this.h = 27;
+
+    this.setup('heart', {});
+
+    this.draw = function(ctx){
+        SpriteSheet.draw(ctx,this.sprite,this.x,this.y,this.frame);
+    }
+}
+
+Heart.prototype = new Sprite();
+Heart.prototype.step = function(){};
+
 ///////////////////////////////////////////////
 // Objeto Frog con sus funciones de control
 ///////////////////////////////////////////////
@@ -385,7 +406,12 @@ var Frog = function() {
 	this.direction = 'stop';
     
     this.lifes = 3;
+    this.hearts = [];
 
+    for(var i = 0; i < this.lifes; i++){
+        this.hearts.push(new Heart(i*28));
+    }
+    
 	this.x = Game.width/2 - this.w/2;
     this.y = Game.height - this.h;
 	
@@ -401,23 +427,49 @@ var Frog = function() {
         }
         
         if(this.subFrame >= 9){
-            this.subFrame = 0;
-            this.frame = 0;
-            this.safe = true;
-            this.direction = 'stop';
+            this.stop();
         }
 	}
+
+    // Función para detener la animación de movimiento de la rana
+    this.stop = function(){
+        this.direction = 'stop';
+        this.safe = true;
+        this.frame = 0;
+        this.subFrame = 0;
+    }
+
 }
 
 Frog.prototype = new Sprite();
 Frog.prototype.type = OBJECT_PLAYER;
-// acción tras que la rena sea tocada/colisionada
+
+// Redefinimos el método de dibujado para así poder dibujar los corazones con la vida restante
+// Hacemos esto en vez de añadirlo directamente al board para que así quede asociado al objeto Frog correspondiente
+Frog.prototype.draw = function(ctx){
+    ctx.save();
+	
+	ctx.translate(this.x+this.w/2, this.y+this.h/2);
+	ctx.rotate(this.rotation * Math.PI /180);
+	ctx.translate(-(this.x+this.w/2), -(this.y+this.h/2));
+	
+    SpriteSheet.draw(ctx,this.sprite,this.x,this.y,this.frame);
+	ctx.restore();
+
+    for(var i = 0; i < this.lifes; i++){
+        this.hearts[i].draw(ctx);
+    }
+}
+
+// acción tras que la rana sea tocada/colisionada
 Frog.prototype.hit = function(){
     if(this.lifes > 1){
         this.lifes--;
+        this.hearts.pop();
         this.board.add(new Death(this.x, this.y));
         this.x = Game.width/2 - this.w/2;
         this.y = Game.height - this.h;
+        this.stop();
     } else{
         this.board.remove(this);
 	    this.board.changeEnable();
